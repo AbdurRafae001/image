@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>One-to-Many Relationship: Departments ↔ Employees</title>
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      max-width: 1000px;
+      width: 100%;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      text-align: center;
+      font-size: 1.2em;
+      color: #7f8c8d;
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+    
+    .diagram-section {
+      margin-bottom: 40px;
+    }
+    
+    .section-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 60px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+    
+    .table-box {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      border: 3px solid #3498db;
+      border-radius: 15px;
+      padding: 25px;
+      width: 280px;
+      box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .table-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(52, 152, 219, 0.3);
+    }
+    
+    .table-title {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #2980b9;
+      margin-bottom: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    
+    .attribute {
+      font-size: 16px;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 8px;
+      background: #f8f9fa;
+      border-left: 4px solid #ecf0f1;
+    }
+    
+    .pk {
+      background: linear-gradient(90deg, #e8f5e8, #f8f9fa);
+      border-left-color: #27ae60;
+      font-weight: 600;
+    }
+    
+    .pk::after {
+      content: " (Primary Key)";
+      color: #27ae60;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .fk {
+      background: linear-gradient(90deg, #fff3e0, #f8f9fa);
+      border-left-color: #f39c12;
+      font-weight: 600;
+    }
+    
+    .fk::after {
+      content: " (Foreign Key)";
+      color: #f39c12;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .arrow-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .arrow {
+      font-size: 3em;
+      color: #e74c3c;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .relationship-label {
+      background: #e74c3c;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+    }
+    
+    .explanation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+    
+    .explanation-card {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      padding: 25px;
+      border-radius: 15px;
+      border-left: 5px solid #3498db;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .explanation-card h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+    
+    .explanation-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .explanation-card li {
+      padding: 8px 0;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    
+    .explanation-card li:last-child {
+      border-bottom: none;
+    }
+    
+    .key-highlight {
+      background: linear-gradient(90deg, #3498db, #2980b9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+    
+    .sample-data {
+      margin-top: 40px;
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 15px;
+      border: 2px dashed #bdc3c7;
+    }
+    
+    .sample-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .sample-tables {
+      display: flex;
+      justify-content: space-around;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .sample-table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      min-width: 250px;
+    }
+    
+    .sample-table-title {
+      background: #34495e;
+      color: white;
+      padding: 15px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .sample-row {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .sample-row:last-child {
+      border-bottom: none;
+    }
+    
+    .sample-row:nth-child(even) {
+      background: #f8f9fa;
+    }
+    
+    @media (max-width: 768px) {
+      .diagram {
+        flex-direction: column;
+        gap: 30px;
+      }
+      
+      .arrow {
+        transform: rotate(90deg);
+      }
+      
+      .table-box {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Database Relationship Design</h1>
+    <div class="subtitle">One-to-Many Relationship with Primary & Foreign Keys</div>
+    
+    <div class="diagram-section">
+      <div class="section-title">Entity Relationship Diagram</div>
+      <div class="diagram">
+        <!-- Department Table -->
+        <div class="table-box">
+          <div class="table-title">Departments</div>
+          <div class="attribute pk">Dept_ID</div>
+          <div class="attribute">Dept_Name</div>
+          <div class="attribute">Location</div>
+          <div class="attribute">Manager</div>
+        </div>
+        
+        <!-- Arrow with relationship info -->
+        <div class="arrow-container">
+          <div class="arrow">→</div>
+          <div class="relationship-label">1 : M</div>
+        </div>
+        
+        <!-- Employee Table -->
+        <div class="table-box">
+          <div class="table-title">Employees</div>
+          <div class="attribute pk">Emp_ID</div>
+          <div class="attribute">Emp_Name</div>
+          <div class="attribute fk">Dept_ID</div>
+          <div class="attribute">Position</div>
+          <div class="attribute">Salary</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="explanation-grid">
+      <div class="explanation-card">
+        <h3>🔑 Primary Key (PK)</h3>
+        <ul>
+          <li><span class="key-highlight">Dept_ID</span> uniquely identifies each department</li>
+          <li><span class="key-highlight">Emp_ID</span> uniquely identifies each employee</li>
+          <li>Cannot be NULL or duplicate</li>
+          <li>Ensures entity integrity</li>
+        </ul>
+      </div>
+      
+      <div class="explanation-card">
+        <h3>🔗 Foreign Key (FK)</h3>
+        <ul>
+          <li><span class="key-highlight">Dept_ID</span> in Employees table</li>
+          <li>References Dept_ID in Departments table</li>
+          <li>Creates the relationship link</li>
+          <li>Ensures referential integrity</li>
+        </ul>
+      </div>
+      
+      <div class="explanation-card">
+        <h3>📊 One-to-Many Relationship</h3>
+        <ul>
+          <li><strong>One</strong> Department → <strong>Many</strong> Employees</li>
+          <li>Each employee belongs to exactly one department</li>
+          <li>Each department can have multiple employees</li>
+          <li>FK in "Many" side references PK in "One" side</li>
+        </ul>
+      </div>
+      
+      <div class="explanation-card">
+        <h3>🔄 Both Directions Explained</h3>
+        <ul>
+          <li><strong>Department → Employee:</strong> One dept has many employees</li>
+          <li><strong>Employee → Department:</strong> Each employee belongs to one dept</li>
+          <li>Forward: 1 department → N employees</li>
+          <li>Reverse: N employees → 1 department</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="sample-data">
+      <div class="sample-title">📋 Sample Data Example</div>
+      <div class="sample-tables">
+        <div class="sample-table">
+          <div class="sample-table-title">Departments</div>
+          <div class="sample-row">
+            <span><strong>Dept_ID</strong></span>
+            <span><strong>Dept_Name</strong></span>
+          </div>
+          <div class="sample-row">
+            <span>101</span>
+            <span>Engineering</span>
+          </div>
+          <div class="sample-row">
+            <span>102</span>
+            <span>Marketing</span>
+          </div>
+          <div class="sample-row">
+            <span>103</span>
+            <span>HR</span>
+          </div>
+        </div>
+        
+        <div class="sample-table">
+          <div class="sample-table-title">Employees</div>
+          <div class="sample-row">
+            <span><strong>Emp_ID</strong></span>
+            <span><strong>Name</strong></span>
+            <span><strong>Dept_ID</strong></span>
+          </div>
+          <div class="sample-row">
+            <span>1001</span>
+            <span>Alice</span>
+            <span>101</span>
+          </div>
+          <div class="sample-row">
+            <span>1002</span>
+            <span>Bob</span>
+            <span>101</span>
+          </div>
+          <div class="sample-row">
+            <span>1003</span>
+            <span>Carol</span>
+            <span>102</span>
+          </div>
+          <div class="sample-row">
+            <span>1004</span>
+            <span>David</span>
+            <span>101</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
